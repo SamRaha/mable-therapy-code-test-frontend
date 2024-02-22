@@ -1,4 +1,3 @@
-// src/components/SearchBar.tsx
 import React, { useState } from "react";
 import styled from "styled-components";
 
@@ -11,7 +10,7 @@ const StyledContainer = styled.div`
 const StyledInput = styled.input`
     padding: 10px;
     width: 100%;
-    max-width: 600px; // Adjust based on your preference
+    max-width: 600px;
     border: 1px solid #ccc;
     border-radius: 5px;
     font-size: 16px;
@@ -28,7 +27,7 @@ const StyledInput = styled.input`
 `;
 
 interface SearchBarProps {
-    onSearch: (searchTerm: string) => void;
+    onSearch: (searchTerm: string, immediate?: boolean) => void;
 }
 
 const SearchBar: React.FC<SearchBarProps> = ({ onSearch }) => {
@@ -36,13 +35,21 @@ const SearchBar: React.FC<SearchBarProps> = ({ onSearch }) => {
 
     const handleChange = (event: React.ChangeEvent<HTMLInputElement>) => {
         setInputValue(event.target.value);
-        // Implement a debounce function or delay here if you want to reduce API calls
+        // Trigger search with debounce
         onSearch(event.target.value);
+    };
+
+    const handleKeyDown = (event: React.KeyboardEvent<HTMLInputElement>) => {
+        if (event.key === "Enter") {
+            console.log("pressed enter");
+            // Trigger search immediately on Enter key press
+            onSearch(inputValue, true);
+        }
     };
 
     return (
         <StyledContainer>
-            <StyledInput type="text" value={inputValue} onChange={handleChange} placeholder="Search for GitHub repositories" data-testid="search-input" />
+            <StyledInput type="text" value={inputValue} onChange={handleChange} onKeyDown={handleKeyDown} placeholder="Search for GitHub repositories" />
         </StyledContainer>
     );
 };

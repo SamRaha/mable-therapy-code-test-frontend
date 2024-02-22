@@ -1,58 +1,63 @@
-// src/hooks/useSearch.ts
 import { useState, useEffect } from "react";
 
 interface Repository {
     id: number;
     full_name: string;
-    description: string; // Ensure this is included
-    stargazers_count: number; // Ensure this is included
+    description: string;
+    stargazers_count: number;
 }
 
 const BASE_URL = "https://api.github.com";
+const ITEMS_PER_PAGE = 10;
+const DEBOUNCE_DELAY = 1000; // milliseconds
 
-export const useSearch = (searchTerm: string) => {
+export const useSearch = (searchTerm: string, page: number, immediate: boolean) => {
     const [data, setData] = useState<Repository[]>([]);
     const [loading, setLoading] = useState<boolean>(false);
     const [error, setError] = useState<string | null>(null);
+    const [totalPages, setTotalPages] = useState<number>(0);
 
     useEffect(() => {
-        const handler = setTimeout(() => {
-            if (searchTerm) {
-                setLoading(true);
-                setError(null);
-                fetch(`${BASE_URL}/search/repositories?q=${searchTerm}`)
-                    .then((response) => {
-                        if (!response.ok) {
-                            throw new Error("Network response was not ok");
-                        }
-                        return response.json();
-                    })
-                    .then((result) => {
-                        setData(
-                            result.items.map((item: any) => ({
-                                id: item.id,
-                                full_name: item.full_name,
-                                description: item.description, // Map description
-                                stargazers_count: item.stargazers_count, // Map stargazers_count
-                            }))
-                        );
-                    })
-                    .catch((error) => {
-                        console.error("Error fetching data: ", error);
-                        setError("Failed to fetch data. Please try again.");
-                        setData([]);
-                    })
-                    .finally(() => {
-                        setLoading(false);
-                    });
-            } else {
+        const fetchData = async () => {
+            if (!searchTerm) {
                 setData([]);
-                setError(null);
+                setTotalPages(0);
+                setLoading(false);
+                return;
             }
-        }, 300);
 
-        return () => clearTimeout(handler);
-    }, [searchTerm]);
+            setLoading(true);
+            setError(null);
 
-    return { data, loading, error };
+            try {
+                const response = await fetch(`${BASE_URL}/search/repositories?q=${encodeURIComponent(searchTerm)}&per_page=${ITEMS_PER_PAGE}&page=${page}`, {
+                    headers: {
+                        Accept: "application/vnd.github.v3+json",
+                    },
+                });
+
+                if (!response.ok) throw new Error("Network response was not ok");
+
+                const result = await response.json();
+                setData(result.items);
+                const totalCount = result.total_count;
+                setTotalPages(Math.ceil(totalCount / ITEMS_PER_PAGE));
+            } catch (error) {
+                console.error("Error fetching data: ", error);
+                setError("Failed to fetch data. Please try again.");
+                setData([]);
+            } finally {
+                setLoading(false);
+            }
+        };
+
+        if (immediate) {
+            fetchData();
+        } else {
+            const timerId = setTimeout(() => fetchData(), DEBOUNCE_DELAY);
+            return () => clearTimeout(timerId);
+        }
+    }, [searchTerm, page, immediate]);
+
+    return { data, loading, error, totalPages };
 };

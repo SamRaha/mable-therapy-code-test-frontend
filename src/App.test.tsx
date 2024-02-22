@@ -1,11 +1,10 @@
-// src/App.test.tsx
 import React from "react";
 import { render, screen } from "@testing-library/react";
-import "@testing-library/jest-dom";
+import "@testing-library/jest-dom/extend-expect";
 import App from "./App";
-import * as useSearchHook from "./hooks/useSearch"; // Ensure the path is correct
+import * as useSearchHook from "./hooks/useSearch";
 
-// Mock the useSearch hook before importing the App component
+// Correctly mock the useSearch hook with proper typing
 jest.mock("./hooks/useSearch", () => ({
     useSearch: jest.fn(),
 }));
@@ -13,30 +12,42 @@ jest.mock("./hooks/useSearch", () => ({
 describe("App", () => {
     beforeEach(() => {
         // Reset the mock before each test
-        (useSearchHook.useSearch as jest.Mock).mockReset();
+        jest.clearAllMocks();
     });
 
-    it("shows loading text when loading", () => {
-        (useSearchHook.useSearch as jest.Mock).mockReturnValue({ data: [], loading: true, error: null });
-        render(<App />);
-        expect(screen.getByTestId("loading")).toBeInTheDocument();
-    });
-
-    it("displays an error message when there is an error", () => {
-        const errorMessage = "Failed to fetch";
-        (useSearchHook.useSearch as jest.Mock).mockReturnValue({ data: [], loading: false, error: errorMessage });
-        render(<App />);
-        expect(screen.getByTestId("error-message")).toHaveTextContent(errorMessage);
-    });
-
-    it("renders the repository list when data is fetched successfully", () => {
-        const mockData = [{ id: 1, full_name: "repo/name", description: "Test repo", stargazers_count: 42 }];
+    it("shows loading text when loading", async () => {
+        // Cast the mocked function to Jest's Mock type
         (useSearchHook.useSearch as jest.Mock).mockReturnValue({
-            data: mockData,
-            loading: false,
+            data: [],
+            loading: true,
             error: null,
+            hasNextPage: false,
         });
         render(<App />);
-        expect(screen.getByTestId("repository-list")).toBeInTheDocument();
+        expect(await screen.findByTestId("loading")).toBeInTheDocument();
+    });
+
+    it("displays an error message when there is an error", async () => {
+        // Repeat the casting for other tests
+        (useSearchHook.useSearch as jest.Mock).mockReturnValue({
+            data: [],
+            loading: false,
+            error: "Failed to fetch",
+            hasNextPage: false,
+        });
+        render(<App />);
+        expect(await screen.findByTestId("error-message")).toHaveTextContent("Failed to fetch");
+    });
+
+    it("renders the repository list when data is fetched successfully", async () => {
+        (useSearchHook.useSearch as jest.Mock).mockReturnValue({
+            data: [{ id: 1, full_name: "repo/name", description: "Test repo", stargazers_count: 42 }],
+            loading: false,
+            error: null,
+            hasNextPage: true,
+        });
+        render(<App />);
+        expect(await screen.findByTestId("repository-list")).toBeInTheDocument();
+        expect(screen.getByText("repo/name")).toBeInTheDocument();
     });
 });
