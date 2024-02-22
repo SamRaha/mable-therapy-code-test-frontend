@@ -1,7 +1,6 @@
 // src/components/RepositoryList.tsx
 import React from "react";
 import styled from "styled-components";
-import useLocalStorage from "../hooks/useLocalStorage";
 
 export const Container = styled.ul`
     list-style: none;
@@ -46,14 +45,6 @@ export const StarCount = styled.span`
     }
 `;
 
-export interface Repository {
-    id: number;
-    full_name: string;
-    description: string;
-    stargazers_count: number;
-    html_url: string; // Ensure this is included if you're using it
-}
-
 const FavoriteButton = styled.button`
     background: none;
     border: none;
@@ -65,24 +56,25 @@ const FavoriteButton = styled.button`
     }
 `;
 
+interface Repository {
+    id: number;
+    full_name: string;
+    description: string;
+    stargazers_count: number;
+    html_url: string;
+}
+
 interface RepositoryListProps {
     repositories: Repository[];
     "data-testid"?: string;
-    setFavorites?: (value: Repository[] | ((val: Repository[]) => Repository[])) => void; // Optional prop
+    favourites: Repository[]; // Now required as prop
+    setFavourites: (value: Repository[] | ((val: Repository[]) => Repository[])) => void; // Now required as prop
 }
 
-const RepositoryList: React.FC<RepositoryListProps> = ({ repositories, "data-testid": testId }) => {
-    const [favourites, setFavourites] = useLocalStorage<Repository[]>("favourites", []);
-
+const RepositoryList: React.FC<RepositoryListProps> = ({ repositories, favourites, setFavourites }) => {
     const toggleFavorite = (repo: Repository) => {
-        setFavourites((currentFavourites) => {
-            const isFavourite = currentFavourites.some((f) => f.id === repo.id);
-            if (isFavourite) {
-                return currentFavourites.filter((f) => f.id !== repo.id);
-            } else {
-                return [...currentFavourites, repo];
-            }
-        });
+        const isFavourite = favourites.some((f) => f.id === repo.id);
+        setFavourites(isFavourite ? favourites.filter((f) => f.id !== repo.id) : [...favourites, repo]);
     };
 
     return (

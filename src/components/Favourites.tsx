@@ -1,30 +1,25 @@
 // src/components/Favorites.tsx
 import React from "react";
-import useLocalStorage from "../hooks/useLocalStorage";
-import RepositoryList from "./RepositoryList"; // Make sure to import RepositoryList
+import RepositoryList from "./RepositoryList";
 
 interface Repository {
     id: number;
     full_name: string;
     description: string;
     stargazers_count: number;
-    html_url: string; // URL to the repository
+    html_url: string;
 }
 
-interface RepositoryListProps {
-    repositories: Repository[];
-    "data-testid"?: string;
+interface FavouritesProps {
+    favourites: Repository[]; // Passed from the parent component
+    setFavourites: (value: Repository[] | ((val: Repository[]) => Repository[])) => void; // Passed from the parent component
 }
 
-const Favorites: React.FC = () => {
-    // Fetch favourites from local storage
-    const [favourites] = useLocalStorage<RepositoryListProps["repositories"]>("favourites", []);
-    console.log("favourites: ", favourites);
-
+const Favorites: React.FC<FavouritesProps> = ({ favourites, setFavourites }) => {
     return (
         <div>
             <h2>Favorites</h2>
-            <RepositoryList repositories={favourites} />
+            <RepositoryList repositories={favourites} favourites={favourites} setFavourites={setFavourites} />
         </div>
     );
 };

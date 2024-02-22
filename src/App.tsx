@@ -6,7 +6,8 @@ import SearchBar from "./components/SearchBar";
 import RepositoryList from "./components/RepositoryList";
 import Pagination from "./components/Pagination";
 import { useSearch } from "./hooks/useSearch";
-import Favorites from "./components/Favourites";
+import Favourites from "./components/Favourites";
+import useLocalStorage from "./hooks/useLocalStorage";
 
 const Container = styled.div`
     padding: 20px;
@@ -29,10 +30,19 @@ const Results = styled.div`
     height: 530px;
 `;
 
+interface Repository {
+    id: number;
+    full_name: string;
+    description: string;
+    stargazers_count: number;
+    html_url: string; // Ensure this is included if you're using it
+}
+
 const App: React.FC = () => {
     const [searchTerm, setSearchTerm] = useState<string>("");
     const [page, setPage] = useState<number>(1);
     const [immediate, setImmediate] = useState<boolean>(false);
+    const [favourites, setFavourites] = useLocalStorage<Repository[]>("favourites", []);
 
     const handleSearch = useCallback((value: string, immediate: boolean = false) => {
         setSearchTerm(value);
@@ -53,10 +63,10 @@ const App: React.FC = () => {
         <Router>
             <div>
                 <nav>
-                    <Link to="/">Home</Link> | <Link to="/favorites">Favorites</Link>
+                    <Link to="/">Home</Link> | <Link to="/favourites">Favourites</Link>
                 </nav>
                 <Routes>
-                    <Route path="/favorites" element={<Favorites />} />
+                    <Route path="/favourites" element={<Favourites favourites={favourites} setFavourites={setFavourites} />} />
                     <Route
                         path="/"
                         element={
@@ -65,7 +75,7 @@ const App: React.FC = () => {
                                 <Results>
                                     {loading && <LoadingText>Loading...</LoadingText>}
                                     {error && <ErrorMessage>{error}</ErrorMessage>}
-                                    {!loading && !error && <RepositoryList repositories={data} />}
+                                    {!loading && !error && <RepositoryList repositories={data} setFavourites={setFavourites} favourites={favourites} />}
                                 </Results>
                                 <Pagination currentPage={page} totalPages={totalPages} onPageChange={handlePageChange} />
                             </Container>
