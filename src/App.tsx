@@ -2,10 +2,10 @@ import React, { useState, useCallback } from "react";
 import styled from "styled-components";
 import SearchBar from "./components/SearchBar";
 import RepositoryList from "./components/RepositoryList";
-import SearchResultsPagination from "./components/SearchResultsPagination";
+import Pagination from "./components/Pagination";
 import { useSearch } from "./hooks/useSearch";
 
-const AppContainer = styled.div`
+const Container = styled.div`
     padding: 20px;
     max-width: 800px;
     margin: auto;
@@ -20,6 +20,10 @@ const LoadingText = styled.p`
 const ErrorMessage = styled.p`
     color: #d73a49;
     text-align: center;
+`;
+
+const Results = styled.div`
+    height: 530px;
 `;
 
 const App: React.FC = () => {
@@ -42,13 +46,15 @@ const App: React.FC = () => {
     const { data, loading, error, totalPages } = useSearch(searchTerm, page, immediate);
 
     return (
-        <AppContainer>
+        <Container>
             <SearchBar onSearch={handleSearch} />
-            {loading && <LoadingText>Loading...</LoadingText>}
-            {error && <ErrorMessage>{error}</ErrorMessage>}
-            {!loading && !error && <RepositoryList repositories={data} />}
-            <SearchResultsPagination currentPage={page} totalPages={totalPages} onPageChange={handlePageChange} />
-        </AppContainer>
+            <Results>
+                {loading && <LoadingText>Loading...</LoadingText>}
+                {error && <ErrorMessage>{error}</ErrorMessage>}
+                {!loading && !error && <RepositoryList repositories={data} />}
+            </Results>
+            <Pagination currentPage={page} totalPages={totalPages} onPageChange={handlePageChange} />
+        </Container>
     );
 };
 

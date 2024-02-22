@@ -2,24 +2,27 @@
 import React from "react";
 import styled from "styled-components";
 
-export const RepoList = styled.ul`
+export const Container = styled.ul`
     list-style: none;
     padding: 0;
     margin: 0;
+    height: 100%;
 `;
 
 export const RepoItem = styled.li`
     padding: 10px;
     border-bottom: 1px solid #e1e4e8;
+
     &:last-child {
         border-bottom: none;
     }
+    height: 85px;
 `;
 
 export const RepoName = styled.h2`
     font-size: 16px;
     color: #0366d6;
-    margin: 0 0 8px 0;
+    margin: 0 0 6px 0;
     cursor: pointer;
     &:hover {
         text-decoration: underline;
@@ -29,12 +32,12 @@ export const RepoName = styled.h2`
 export const RepoDescription = styled.p`
     font-size: 14px;
     color: #586069;
-    margin: 0 0 8px 0;
+    margin: 0 0 6px 0;
 `;
 
 export const StarCount = styled.span`
     display: inline-block;
-    margin-right: 10px;
+    margin: 0 12px 0 0;
     font-size: 12px;
     color: #586069;
     &::before {
@@ -56,15 +59,15 @@ interface RepositoryListProps {
 
 const RepositoryList: React.FC<RepositoryListProps> = ({ repositories, "data-testid": testId }) => {
     return (
-        <RepoList data-testid={testId}>
+        <Container data-testid={testId}>
             {repositories.map((repo) => (
                 <RepoItem key={repo.id}>
                     <RepoName>{repo.full_name}</RepoName>
-                    <RepoDescription>{repo.description ? repo.description : "No description"}</RepoDescription>
+                    <RepoDescription className="ellipsis">{repo.description ? repo.description : "No description"}</RepoDescription>
                     <StarCount>{repo.stargazers_count}</StarCount>
                 </RepoItem>
             ))}
-        </RepoList>
+        </Container>
     );
 };
 

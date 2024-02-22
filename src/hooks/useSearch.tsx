@@ -8,7 +8,7 @@ interface Repository {
 }
 
 const BASE_URL = "https://api.github.com";
-const ITEMS_PER_PAGE = 10;
+const ITEMS_PER_PAGE = 5;
 const DEBOUNCE_DELAY = 1000; // milliseconds
 
 export const useSearch = (searchTerm: string, page: number, immediate: boolean) => {

@@ -1,7 +1,7 @@
-import React from "react";
+import React, { useCallback } from "react";
 import styled from "styled-components";
 
-const PaginationContainer = styled.nav`
+const Container = styled.nav`
     display: flex;
     justify-content: center;
     padding: 10px;
@@ -23,7 +23,7 @@ interface SearchResultsPaginationProps {
 
 type PageNumber = number | "...";
 
-const SearchResultsPagination: React.FC<SearchResultsPaginationProps> = ({ currentPage, totalPages, onPageChange }) => {
+const Pagination: React.FC<SearchResultsPaginationProps> = ({ currentPage, totalPages, onPageChange }) => {
     const pageNumbers: PageNumber[] = [];
     for (let i = 1; i <= totalPages; i++) {
         if (i === currentPage || i === 1 || i === totalPages || (i >= currentPage - 2 && i <= currentPage + 2)) {
@@ -33,9 +33,21 @@ const SearchResultsPagination: React.FC<SearchResultsPaginationProps> = ({ curre
         }
     }
 
+    const handlePrevPage = useCallback(() => {
+        if (currentPage > 1) {
+            onPageChange(currentPage - 1);
+        }
+    }, [currentPage, onPageChange]);
+
+    const handleNextPage = useCallback(() => {
+        if (currentPage < totalPages) {
+            onPageChange(currentPage + 1);
+        }
+    }, [currentPage, totalPages, onPageChange]);
+
     return (
-        <PaginationContainer>
-            <PageButton onClick={() => onPageChange(currentPage - 1)} disabled={currentPage === 1}>
+        <Container>
+            <PageButton onClick={handlePrevPage} disabled={currentPage === 1}>
                 Previous
             </PageButton>
             {pageNumbers.map((number, index) =>
@@ -47,11 +59,11 @@ const SearchResultsPagination: React.FC<SearchResultsPaginationProps> = ({ curre
                     </PageButton>
                 )
             )}
-            <PageButton onClick={() => onPageChange(currentPage + 1)} disabled={currentPage >= totalPages}>
+            <PageButton onClick={handleNextPage} disabled={currentPage >= totalPages}>
                 Next
             </PageButton>
-        </PaginationContainer>
+        </Container>
     );
 };
 
-export default SearchResultsPagination;
+export default Pagination;
