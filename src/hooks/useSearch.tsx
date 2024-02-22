@@ -1,3 +1,4 @@
+// src/hooks/useSearch.tsx
 import { useState, useEffect } from "react";
 
 interface Repository {
@@ -5,11 +6,12 @@ interface Repository {
     full_name: string;
     description: string;
     stargazers_count: number;
+    html_url: string;
 }
 
 const BASE_URL = "https://api.github.com";
 const ITEMS_PER_PAGE = 5;
-const DEBOUNCE_DELAY = 1000; // milliseconds
+const DEBOUNCE_DELAY = 300; // milliseconds
 
 export const useSearch = (searchTerm: string, page: number, immediate: boolean) => {
     const [data, setData] = useState<Repository[]>([]);
@@ -39,7 +41,15 @@ export const useSearch = (searchTerm: string, page: number, immediate: boolean) 
                 if (!response.ok) throw new Error("Network response was not ok");
 
                 const result = await response.json();
-                setData(result.items);
+                setData(
+                    result.items.map((item: any) => ({
+                        id: item.id,
+                        full_name: item.full_name,
+                        description: item.description,
+                        stargazers_count: item.stargazers_count,
+                        html_url: item.html_url,
+                    }))
+                );
                 const totalCount = result.total_count;
                 setTotalPages(Math.ceil(totalCount / ITEMS_PER_PAGE));
             } catch (error) {

@@ -1,6 +1,7 @@
 // src/components/RepositoryList.tsx
 import React from "react";
 import styled from "styled-components";
+import useLocalStorage from "../hooks/useLocalStorage";
 
 export const Container = styled.ul`
     list-style: none;
@@ -45,26 +46,53 @@ export const StarCount = styled.span`
     }
 `;
 
-interface Repository {
+export interface Repository {
     id: number;
     full_name: string;
     description: string;
     stargazers_count: number;
+    html_url: string; // Ensure this is included if you're using it
 }
+
+const FavoriteButton = styled.button`
+    background: none;
+    border: none;
+    cursor: pointer;
+    color: #0366d6;
+
+    &:hover {
+        text-decoration: underline;
+    }
+`;
 
 interface RepositoryListProps {
     repositories: Repository[];
     "data-testid"?: string;
+    setFavorites?: (value: Repository[] | ((val: Repository[]) => Repository[])) => void; // Optional prop
 }
 
 const RepositoryList: React.FC<RepositoryListProps> = ({ repositories, "data-testid": testId }) => {
+    const [favourites, setFavourites] = useLocalStorage<Repository[]>("favourites", []);
+
+    const toggleFavorite = (repo: Repository) => {
+        setFavourites((currentFavourites) => {
+            const isFavourite = currentFavourites.some((f) => f.id === repo.id);
+            if (isFavourite) {
+                return currentFavourites.filter((f) => f.id !== repo.id);
+            } else {
+                return [...currentFavourites, repo];
+            }
+        });
+    };
+
     return (
-        <Container data-testid={testId}>
+        <Container>
             {repositories.map((repo) => (
                 <RepoItem key={repo.id}>
-                    <RepoName>{repo.full_name}</RepoName>
-                    <RepoDescription className="ellipsis">{repo.description ? repo.description : "No description"}</RepoDescription>
+                    <RepoName onClick={() => window.open(repo.html_url, "_blank")}>{repo.full_name}</RepoName>
+                    <RepoDescription>{repo.description ? repo.description : "No description"}</RepoDescription>
                     <StarCount>{repo.stargazers_count}</StarCount>
+                    <FavoriteButton onClick={() => toggleFavorite(repo)}>{favourites.some((f) => f.id === repo.id) ? "Unfavourite" : "Favorite"}</FavoriteButton>
                 </RepoItem>
             ))}
         </Container>

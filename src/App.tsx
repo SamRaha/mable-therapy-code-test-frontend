@@ -1,9 +1,12 @@
 import React, { useState, useCallback } from "react";
+import { BrowserRouter as Router, Route, Routes, Link } from "react-router-dom";
+
 import styled from "styled-components";
 import SearchBar from "./components/SearchBar";
 import RepositoryList from "./components/RepositoryList";
 import Pagination from "./components/Pagination";
 import { useSearch } from "./hooks/useSearch";
+import Favorites from "./components/Favourites";
 
 const Container = styled.div`
     padding: 20px;
@@ -44,17 +47,33 @@ const App: React.FC = () => {
 
     // Pass the immediate state to useSearch to control debouncing
     const { data, loading, error, totalPages } = useSearch(searchTerm, page, immediate);
+    console.log("data: ", data);
 
     return (
-        <Container>
-            <SearchBar onSearch={handleSearch} />
-            <Results>
-                {loading && <LoadingText>Loading...</LoadingText>}
-                {error && <ErrorMessage>{error}</ErrorMessage>}
-                {!loading && !error && <RepositoryList repositories={data} />}
-            </Results>
-            <Pagination currentPage={page} totalPages={totalPages} onPageChange={handlePageChange} />
-        </Container>
+        <Router>
+            <div>
+                <nav>
+                    <Link to="/">Home</Link> | <Link to="/favorites">Favorites</Link>
+                </nav>
+                <Routes>
+                    <Route path="/favorites" element={<Favorites />} />
+                    <Route
+                        path="/"
+                        element={
+                            <Container>
+                                <SearchBar onSearch={handleSearch} />
+                                <Results>
+                                    {loading && <LoadingText>Loading...</LoadingText>}
+                                    {error && <ErrorMessage>{error}</ErrorMessage>}
+                                    {!loading && !error && <RepositoryList repositories={data} />}
+                                </Results>
+                                <Pagination currentPage={page} totalPages={totalPages} onPageChange={handlePageChange} />
+                            </Container>
+                        }
+                    />
+                </Routes>
+            </div>
+        </Router>
     );
 };
 
