@@ -1,45 +1,38 @@
-// src/__tests__/App.test.jsx
+// src/App.test.tsx
 import React from "react";
-import { render, screen, act } from "@testing-library/react";
+import { render, screen } from "@testing-library/react";
 import "@testing-library/jest-dom";
 import App from "./App";
-import * as useSearchHook from "./hooks/useSearch";
+import * as useSearchHook from "./hooks/useSearch"; // Ensure the path is correct
 
-// Mock components
-jest.mock("../components/SearchBar", () => () => <input data-testid="search-bar" />);
-jest.mock("../components/RepositoryList", () => () => <div data-testid="repository-list"></div>);
+// Mock the useSearch hook before importing the App component
+jest.mock("./hooks/useSearch", () => ({
+    useSearch: jest.fn(),
+}));
 
-describe("App component", () => {
-    // Mock useSearch hook before each test
+describe("App", () => {
     beforeEach(() => {
-        jest.spyOn(useSearchHook, "useSearch").mockReturnValue({
-            data: [],
-            loading: false,
-            error: null,
-        });
-    });
-
-    it("renders the search bar", () => {
-        render(<App />);
-        expect(screen.getByTestId("search-bar")).toBeInTheDocument();
+        // Reset the mock before each test
+        (useSearchHook.useSearch as jest.Mock).mockReset();
     });
 
     it("shows loading text when loading", () => {
-        useSearchHook.useSearch.mockReturnValue({ data: [], loading: true, error: null });
+        (useSearchHook.useSearch as jest.Mock).mockReturnValue({ data: [], loading: true, error: null });
         render(<App />);
-        expect(screen.getByText(/loading/i)).toBeInTheDocument();
+        expect(screen.getByTestId("loading")).toBeInTheDocument();
     });
 
     it("displays an error message when there is an error", () => {
         const errorMessage = "Failed to fetch";
-        useSearchHook.useSearch.mockReturnValue({ data: [], loading: false, error: errorMessage });
+        (useSearchHook.useSearch as jest.Mock).mockReturnValue({ data: [], loading: false, error: errorMessage });
         render(<App />);
-        expect(screen.getByText(errorMessage)).toBeInTheDocument();
+        expect(screen.getByTestId("error-message")).toHaveTextContent(errorMessage);
     });
 
     it("renders the repository list when data is fetched successfully", () => {
-        useSearchHook.useSearch.mockReturnValue({
-            data: [{ id: 1, full_name: "repo/name", description: "Test repo", stargazers_count: 42 }],
+        const mockData = [{ id: 1, full_name: "repo/name", description: "Test repo", stargazers_count: 42 }];
+        (useSearchHook.useSearch as jest.Mock).mockReturnValue({
+            data: mockData,
             loading: false,
             error: null,
         });

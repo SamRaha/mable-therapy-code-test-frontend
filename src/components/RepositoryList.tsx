@@ -51,11 +51,12 @@ interface Repository {
 
 interface RepositoryListProps {
     repositories: Repository[];
+    "data-testid"?: string;
 }
 
-const RepositoryList: React.FC<RepositoryListProps> = ({ repositories }) => {
+const RepositoryList: React.FC<RepositoryListProps> = ({ repositories, "data-testid": testId }) => {
     return (
-        <RepoList>
+        <RepoList data-testid={testId}>
             {repositories.map((repo) => (
                 <RepoItem key={repo.id}>
                     <RepoName>{repo.full_name}</RepoName>
