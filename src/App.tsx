@@ -25,7 +25,7 @@ const Container = styled.div`
 const LoadingContainer = styled.div`
     display: flex;
     justify-content: center;
-    margin: 20px 0 0 0;
+    padding: 20px 0 0 0;
 `;
 
 const ErrorMessage = styled.p`
@@ -99,7 +99,7 @@ const App: React.FC = () => {
                                 {showResults ? <RepositoryList repositories={data} favourites={favourites} onFavourites={setFavourites} data-testid="repository-list" /> : null}
                             </Results>
                             <div className="space-24" />
-                            {showResults ? <Pagination currentPage={page} totalPages={totalPages} onPageChange={handlePageChange} /> : null}
+                            {showResults || data.length > 0 ? <Pagination currentPage={page} totalPages={totalPages} onPageChange={handlePageChange} /> : null}
                         </Container>
                     }
                 />
