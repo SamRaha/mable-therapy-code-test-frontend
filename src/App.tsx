@@ -25,7 +25,7 @@ const Container = styled.div`
 const LoadingContainer = styled.div`
     display: flex;
     justify-content: center;
-    padding: 20px 0 0 0;
+    margin: 20px 0 0 0;
 `;
 
 const ErrorMessage = styled.p`

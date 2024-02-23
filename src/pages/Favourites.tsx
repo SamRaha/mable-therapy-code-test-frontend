@@ -20,8 +20,7 @@ const Favourites: React.FC<FavouritesProps> = ({ favourites, onFavourites }) => 
     return (
         <Container>
             <h2>Favourites</h2>
-
-            <RepositoryList repositories={favourites} favourites={favourites} onFavourites={onFavourites} />
+            {favourites?.length ? <RepositoryList repositories={favourites} favourites={favourites} onFavourites={onFavourites} /> : <p>You currently have no saved favourites</p>}
         </Container>
     );
 };
