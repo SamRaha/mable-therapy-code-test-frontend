@@ -1,13 +1,6 @@
 // src/hooks/useSearch.tsx
 import { useState, useEffect } from "react";
-
-interface Repository {
-    id: number;
-    full_name: string;
-    description: string;
-    stargazers_count: number;
-    html_url: string;
-}
+import { Repository } from "../types/repository";
 
 const BASE_URL = "https://api.github.com";
 const ITEMS_PER_PAGE = 5;

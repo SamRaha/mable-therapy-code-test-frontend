@@ -1,12 +1,15 @@
 // src/components/RepositoryList.tsx
 import React from "react";
 import styled from "styled-components";
+import { Repository } from "../types/repository";
 
 export const Container = styled.ul`
     list-style: none;
-    padding: 0;
+    padding: 12px;
     margin: 0;
     height: 100%;
+    background-color: white;
+    border-radius: 1.5rem;
 `;
 
 export const RepoItem = styled.li`
@@ -56,25 +59,17 @@ const FavoriteButton = styled.button`
     }
 `;
 
-interface Repository {
-    id: number;
-    full_name: string;
-    description: string;
-    stargazers_count: number;
-    html_url: string;
-}
-
 interface RepositoryListProps {
     repositories: Repository[];
     "data-testid"?: string;
-    favourites: Repository[]; // Now required as prop
-    setFavourites: (value: Repository[] | ((val: Repository[]) => Repository[])) => void; // Now required as prop
+    favourites: Repository[];
+    onFavourites: (value: Repository[] | ((val: Repository[]) => Repository[])) => void;
 }
 
-const RepositoryList: React.FC<RepositoryListProps> = ({ repositories, favourites, setFavourites }) => {
+const RepositoryList: React.FC<RepositoryListProps> = ({ repositories, favourites, onFavourites }) => {
     const toggleFavorite = (repo: Repository) => {
         const isFavourite = favourites.some((f) => f.id === repo.id);
-        setFavourites(isFavourite ? favourites.filter((f) => f.id !== repo.id) : [...favourites, repo]);
+        onFavourites(isFavourite ? favourites.filter((f) => f.id !== repo.id) : [...favourites, repo]);
     };
 
     return (
@@ -84,7 +79,7 @@ const RepositoryList: React.FC<RepositoryListProps> = ({ repositories, favourite
                     <RepoName onClick={() => window.open(repo.html_url, "_blank")}>{repo.full_name}</RepoName>
                     <RepoDescription>{repo.description ? repo.description : "No description"}</RepoDescription>
                     <StarCount>{repo.stargazers_count}</StarCount>
-                    <FavoriteButton onClick={() => toggleFavorite(repo)}>{favourites.some((f) => f.id === repo.id) ? "Unfavourite" : "Favorite"}</FavoriteButton>
+                    <FavoriteButton onClick={() => toggleFavorite(repo)}>{favourites.some((f) => f.id === repo.id) ? "Unfavourite" : "Favourite"}</FavoriteButton>
                 </RepoItem>
             ))}
         </Container>

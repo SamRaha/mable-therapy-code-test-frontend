@@ -1,13 +1,16 @@
-import React, { useState, useCallback } from "react";
-import { BrowserRouter as Router, Route, Routes, Link } from "react-router-dom";
-
+import React, { useCallback, useMemo, useState } from "react";
+import { Route, BrowserRouter as Router, Routes } from "react-router-dom";
 import styled from "styled-components";
-import SearchBar from "./components/SearchBar";
-import RepositoryList from "./components/RepositoryList";
+import "./App.css";
+import LoadingWheel from "./components/Loadingwheel";
+import Navbar from "./components/Navbar";
 import Pagination from "./components/Pagination";
-import { useSearch } from "./hooks/useSearch";
-import Favourites from "./components/Favourites";
+import RepositoryList from "./components/RepositoryList";
+import SearchBar from "./components/SearchBar";
 import useLocalStorage from "./hooks/useLocalStorage";
+import { useSearch } from "./hooks/useSearch";
+import Favourites from "./pages/Favourites";
+import { Repository } from "./types/repository";
 
 const Container = styled.div`
     padding: 20px;
@@ -16,27 +19,21 @@ const Container = styled.div`
     width: 100%;
 `;
 
-const LoadingText = styled.p`
-    color: #0366d6;
-    text-align: center;
+const LoadingContainer = styled.div`
+    display: flex;
+    justify-content: center;
+    margin: 20px 0 0 0;
 `;
 
 const ErrorMessage = styled.p`
     color: #d73a49;
     text-align: center;
+    margin: 20px 0 0 0;
 `;
 
 const Results = styled.div`
     height: 530px;
 `;
-
-interface Repository {
-    id: number;
-    full_name: string;
-    description: string;
-    stargazers_count: number;
-    html_url: string; // Ensure this is included if you're using it
-}
 
 const App: React.FC = () => {
     const [searchTerm, setSearchTerm] = useState<string>("");
@@ -44,45 +41,51 @@ const App: React.FC = () => {
     const [immediate, setImmediate] = useState<boolean>(false);
     const [favourites, setFavourites] = useLocalStorage<Repository[]>("favourites", []);
 
-    const handleSearch = useCallback((value: string, immediate: boolean = false) => {
-        setSearchTerm(value);
-        setPage(1); // Reset to page 1 for new searches
-        setImmediate(immediate);
-    }, []);
+    const handleSearch = useCallback(
+        (value: string, immediate: boolean = false) => {
+            setSearchTerm(value);
+            setPage(1);
+            setImmediate(immediate);
+        },
+        [setSearchTerm, setPage, setImmediate]
+    );
 
-    const handlePageChange = useCallback((newPage: number) => {
-        setPage(newPage);
-        setImmediate(true); // Page changes should bypass debounce
-    }, []);
+    const handlePageChange = useCallback(
+        (newPage: number) => {
+            setPage(newPage);
+            setImmediate(true);
+        },
+        [setPage, setImmediate]
+    );
 
-    // Pass the immediate state to useSearch to control debouncing
     const { data, loading, error, totalPages } = useSearch(searchTerm, page, immediate);
-    console.log("data: ", data);
+    const showResults = useMemo(() => !loading && !error && data.length > 0, [data, loading, error]);
 
     return (
         <Router>
-            <div>
-                <nav>
-                    <Link to="/">Home</Link> | <Link to="/favourites">Favourites</Link>
-                </nav>
-                <Routes>
-                    <Route path="/favourites" element={<Favourites favourites={favourites} setFavourites={setFavourites} />} />
-                    <Route
-                        path="/"
-                        element={
-                            <Container>
-                                <SearchBar onSearch={handleSearch} />
-                                <Results>
-                                    {loading && <LoadingText>Loading...</LoadingText>}
-                                    {error && <ErrorMessage>{error}</ErrorMessage>}
-                                    {!loading && !error && <RepositoryList repositories={data} setFavourites={setFavourites} favourites={favourites} />}
-                                </Results>
-                                <Pagination currentPage={page} totalPages={totalPages} onPageChange={handlePageChange} />
-                            </Container>
-                        }
-                    />
-                </Routes>
-            </div>
+            <Navbar />
+            <Routes>
+                <Route path="/favourites" element={<Favourites favourites={favourites} onFavourites={setFavourites} />} />
+                <Route
+                    path="/"
+                    element={
+                        <Container>
+                            <SearchBar onSearch={handleSearch} />
+                            <Results>
+                                {loading ? (
+                                    <LoadingContainer>
+                                        <LoadingWheel />
+                                    </LoadingContainer>
+                                ) : null}
+                                {error ? <ErrorMessage>{error}</ErrorMessage> : null}
+                                {showResults ? <RepositoryList repositories={data} onFavourites={setFavourites} favourites={favourites} /> : null}
+                            </Results>
+                            <div className="space-24" />
+                            {showResults ? <Pagination currentPage={page} totalPages={totalPages} onPageChange={handlePageChange} /> : null}
+                        </Container>
+                    }
+                />
+            </Routes>
         </Router>
     );
 };

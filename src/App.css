@@ -1,5 +1,21 @@
+body {
+  background-color: rgba(247, 248, 249, 1);
+}
 .ellipsis {
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
+}
+.space-6{
+  width: 6px;
+  height: 6px;
+}
+.space-12{
+  width: 12px;
+  height: 12px;
+}
+
+.space-24{
+  width: 24px;
+  height: 24px;
 }
