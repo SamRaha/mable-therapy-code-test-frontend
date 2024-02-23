@@ -1,7 +1,7 @@
 import React from "react";
 import { Link } from "react-router-dom";
 import styled from "styled-components";
-import LogoSrc from "../assets/mable-logo.webp";
+import LogoSrc from "../assets/logoColor-1.png";
 
 const Container = styled.div`
     display: flex;
