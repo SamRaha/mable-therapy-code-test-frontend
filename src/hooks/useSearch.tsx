@@ -1,14 +1,16 @@
+// Updated useSearch hook with sort parameter
 import { useState, useEffect } from "react";
 import { Repository } from "../types/repository";
 
 const BASE_URL = "https://api.github.com";
 const ITEMS_PER_PAGE = 5;
 
-export const useSearch = (searchTerm: string, page: number) => {
+export const useSearch = (searchTerm: string, page: number, sort: string = "best match") => {
     const [data, setData] = useState<Repository[]>([]);
     const [loading, setLoading] = useState<boolean>(false);
     const [error, setError] = useState<string | null>(null);
     const [totalPages, setTotalPages] = useState<number>(0);
+    const [totalCount, setTotalCount] = useState<number>(0);
 
     useEffect(() => {
         if (!searchTerm.trim()) {
@@ -16,23 +18,23 @@ export const useSearch = (searchTerm: string, page: number) => {
             setTotalPages(0);
             setLoading(false);
             setError(null);
+            setTotalCount(0);
             return;
         }
 
         const fetchData = async () => {
             setLoading(true);
             setError(null);
-
             try {
-                const response = await fetch(`${BASE_URL}/search/repositories?q=${encodeURIComponent(searchTerm)}&per_page=${ITEMS_PER_PAGE}&page=${page}`, {
+                const url = `${BASE_URL}/search/repositories?q=${encodeURIComponent(searchTerm)}&sort=${sort}&per_page=${ITEMS_PER_PAGE}&page=${page}`;
+                const response = await fetch(url, {
                     headers: {
                         Accept: "application/vnd.github.v3+json",
                     },
                 });
 
                 if (!response.ok) {
-                    const errorText = await response.text();
-                    throw new Error(`[${response.status}] ${errorText || "Network response was not ok"}`);
+                    throw new Error(`[${response.status}] Network response was not ok`);
                 }
 
                 const result = await response.json();
@@ -40,18 +42,21 @@ export const useSearch = (searchTerm: string, page: number) => {
                     setError("No results found. Please refine your search.");
                     setData([]);
                     setTotalPages(0);
+                    setTotalCount(0);
                 } else {
+                    setTotalCount(result.total_count);
                     setData(
                         result.items.map((item: any) => ({
                             id: item.id,
                             full_name: item.full_name,
                             description: item.description,
                             stargazers_count: item.stargazers_count,
+                            forks_count: item.forks_count,
+                            updated_at: item.updated_at,
                             html_url: item.html_url,
                         }))
                     );
-                    const totalCount = result.total_count;
-                    setTotalPages(Math.ceil(totalCount / ITEMS_PER_PAGE));
+                    setTotalPages(Math.ceil(result.total_count / ITEMS_PER_PAGE));
                 }
             } catch (error) {
                 console.error("Error fetching data: ", error);
@@ -72,7 +77,7 @@ export const useSearch = (searchTerm: string, page: number) => {
         };
 
         fetchData();
-    }, [searchTerm, page]);
+    }, [searchTerm, page, sort]);
 
-    return { data, loading, error, totalPages };
+    return { data, loading, error, totalPages, totalCount };
 };

@@ -58,6 +58,21 @@ const FavoriteButton = styled.button`
     }
 `;
 
+const ForksCount = styled.span`
+    display: inline-block;
+    font-size: 12px;
+    color: #586069;
+    &::before {
+        content: "🍴 ";
+    }
+`;
+
+const UpdatedAt = styled.span`
+    display: inline-block;
+    font-size: 12px;
+    color: #586069;
+`;
+
 interface RepositoryListProps {
     repositories: Repository[];
     "data-testid"?: string;
@@ -77,7 +92,10 @@ const RepositoryList: React.FC<RepositoryListProps> = ({ repositories, favourite
                 <RepoItem key={repo.id}>
                     <RepoName onClick={() => window.open(repo.html_url, "_blank")}>{repo.full_name}</RepoName>
                     <RepoDescription className="ellipsis">{repo.description ? repo.description : "No description"}</RepoDescription>
+
                     <StarCount>{repo.stargazers_count}</StarCount>
+                    <ForksCount>{repo.forks_count}</ForksCount>
+                    <UpdatedAt>Last updated: {new Date(repo.updated_at).toLocaleDateString()}</UpdatedAt>
                     <FavoriteButton onClick={() => toggleFavorite(repo)}>{favourites.some((f) => f.id === repo.id) ? "Unfavourite" : "Favourite"}</FavoriteButton>
                 </RepoItem>
             ))}

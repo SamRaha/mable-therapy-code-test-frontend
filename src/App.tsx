@@ -11,6 +11,7 @@ import useLocalStorage from "./hooks/useLocalStorage";
 import { useSearch } from "./hooks/useSearch";
 import Favourites from "./pages/Favourites";
 import { Repository } from "./types/repository";
+import SortSelect from "./components/SortSelect";
 
 const Container = styled.div`
     max-width: 800px;
@@ -39,6 +40,7 @@ const Results = styled.div`
 const App: React.FC = () => {
     const [searchTerm, setSearchTerm] = useState<string>("");
     const [page, setPage] = useState<number>(1);
+    const [sort, setSort] = useState<string>(""); // Added sort state
     const [favourites, setFavourites] = useLocalStorage<Repository[]>("favourites", []);
 
     const handleSearch = useCallback(
@@ -56,7 +58,15 @@ const App: React.FC = () => {
         [setPage]
     );
 
-    const { data, loading, error, totalPages } = useSearch(searchTerm, page);
+    const handleSortChange = useCallback(
+        (event: React.ChangeEvent<HTMLSelectElement>) => {
+            setSort(event.target.value);
+            setPage(1);
+        },
+        [setSort, setPage]
+    );
+
+    const { data, loading, error, totalPages, totalCount } = useSearch(searchTerm, page, sort); // Pass sort to useSearch
     const showResults = useMemo(() => !loading && !error && data.length > 0, [data, loading, error]);
 
     return (
@@ -69,6 +79,7 @@ const App: React.FC = () => {
                     element={
                         <Container>
                             <SearchBar onSearch={handleSearch} />
+                            {showResults ? <SortSelect totalCount={totalCount} sort={sort} onSortChange={handleSortChange} /> : null}
                             <Results>
                                 {loading ? (
                                     <LoadingContainer>

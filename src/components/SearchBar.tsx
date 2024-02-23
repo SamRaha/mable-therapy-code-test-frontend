@@ -2,18 +2,18 @@ import React, { useState } from "react";
 import styled from "styled-components";
 
 const StyledContainer = styled.div`
-    margin: 12px 0;
+    margin: 18px 0 6px 0;
     display: flex;
     justify-content: center;
 `;
 
 const StyledInput = styled.input`
-    padding: 10px;
+    padding: 12px 18px;
     width: 100%;
     border: 1px solid #ccc;
     border-radius: 5px;
     font-size: 16px;
-
+    margin: 0 6px;
     &:focus {
         outline: none;
         border-color: #0366d6;
