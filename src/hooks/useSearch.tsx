@@ -1,4 +1,3 @@
-// src/hooks/useSearch.tsx
 import { useState, useEffect } from "react";
 import { Repository } from "../types/repository";
 
@@ -18,6 +17,7 @@ export const useSearch = (searchTerm: string, page: number, immediate: boolean) 
                 setData([]);
                 setTotalPages(0);
                 setLoading(false);
+                setError(null);
                 return;
             }
 
@@ -31,24 +31,43 @@ export const useSearch = (searchTerm: string, page: number, immediate: boolean) 
                     },
                 });
 
-                if (!response.ok) throw new Error("Network response was not ok");
+                if (!response.ok) {
+                    const errorText = await response.text();
+                    throw new Error(`[${response.status}] ${errorText || "Network response was not ok"}`);
+                }
 
                 const result = await response.json();
-                setData(
-                    result.items.map((item: any) => ({
-                        id: item.id,
-                        full_name: item.full_name,
-                        description: item.description,
-                        stargazers_count: item.stargazers_count,
-                        html_url: item.html_url,
-                    }))
-                );
-                const totalCount = result.total_count;
-                setTotalPages(Math.ceil(totalCount / ITEMS_PER_PAGE));
+                if (result.total_count === 0) {
+                    setError("No results found. Please try a different search query.");
+                    setData([]);
+                    setTotalPages(0);
+                } else {
+                    setData(
+                        result.items.map((item: any) => ({
+                            id: item.id,
+                            full_name: item.full_name,
+                            description: item.description,
+                            stargazers_count: item.stargazers_count,
+                            html_url: item.html_url,
+                        }))
+                    );
+                    const totalCount = result.total_count;
+                    setTotalPages(Math.ceil(totalCount / ITEMS_PER_PAGE));
+                }
             } catch (error) {
                 console.error("Error fetching data: ", error);
-                setError("Failed to fetch data. Please try again.");
+                if (error instanceof Error) {
+                    const message = error.message.includes("[404]")
+                        ? "Repository not found. Please refine your search."
+                        : error.message.includes("[403]")
+                        ? "Rate limit exceeded. Please try again later."
+                        : "An unexpected error occurred. Please try again.";
+                    setError(message);
+                } else {
+                    setError("Failed to fetch data. Please try again.");
+                }
                 setData([]);
+                setTotalPages(0);
             } finally {
                 setLoading(false);
             }

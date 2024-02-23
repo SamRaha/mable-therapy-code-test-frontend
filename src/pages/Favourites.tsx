@@ -1,4 +1,3 @@
-// src/components/Favorites.tsx
 import React from "react";
 import RepositoryList from "../components/RepositoryList";
 import styled from "styled-components";
@@ -9,6 +8,7 @@ const Container = styled.div`
     max-width: 800px;
     margin: auto;
     width: 100%;
+    box-sizing: border-box;
 `;
 
 interface FavouritesProps {

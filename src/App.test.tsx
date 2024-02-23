@@ -4,19 +4,16 @@ import "@testing-library/jest-dom/extend-expect";
 import App from "./App";
 import * as useSearchHook from "./hooks/useSearch";
 
-// Correctly mock the useSearch hook with proper typing
 jest.mock("./hooks/useSearch", () => ({
     useSearch: jest.fn(),
 }));
 
 describe("App", () => {
     beforeEach(() => {
-        // Reset the mock before each test
         jest.clearAllMocks();
     });
 
     it("shows loading text when loading", async () => {
-        // Cast the mocked function to Jest's Mock type
         (useSearchHook.useSearch as jest.Mock).mockReturnValue({
             data: [],
             loading: true,
@@ -28,7 +25,6 @@ describe("App", () => {
     });
 
     it("displays an error message when there is an error", async () => {
-        // Repeat the casting for other tests
         (useSearchHook.useSearch as jest.Mock).mockReturnValue({
             data: [],
             loading: false,

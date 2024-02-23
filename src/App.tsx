@@ -13,10 +13,11 @@ import Favourites from "./pages/Favourites";
 import { Repository } from "./types/repository";
 
 const Container = styled.div`
-    padding: 20px;
     max-width: 800px;
     margin: auto;
     width: 100%;
+    padding: 12px;
+    box-sizing: border-box;
 `;
 
 const LoadingContainer = styled.div`
@@ -32,7 +33,7 @@ const ErrorMessage = styled.p`
 `;
 
 const Results = styled.div`
-    height: 530px;
+    height: 505px;
 `;
 
 const App: React.FC = () => {

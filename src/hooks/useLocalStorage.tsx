@@ -1,4 +1,3 @@
-// src/hooks/useLocalStorage.ts
 import { useState } from "react";
 
 function useLocalStorage<T>(key: string, initialValue: T): [T, (value: T | ((val: T) => T)) => void] {

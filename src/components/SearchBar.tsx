@@ -2,7 +2,7 @@ import React, { useState } from "react";
 import styled from "styled-components";
 
 const StyledContainer = styled.div`
-    margin: 20px 0;
+    margin: 12px 0;
     display: flex;
     justify-content: center;
 `;
@@ -10,7 +10,6 @@ const StyledContainer = styled.div`
 const StyledInput = styled.input`
     padding: 10px;
     width: 100%;
-    max-width: 600px;
     border: 1px solid #ccc;
     border-radius: 5px;
     font-size: 16px;
@@ -22,7 +21,7 @@ const StyledInput = styled.input`
     }
 
     &::placeholder {
-        color: #ccc;
+        color: #7a7a7a;
     }
 `;
 
@@ -35,14 +34,11 @@ const SearchBar: React.FC<SearchBarProps> = ({ onSearch }) => {
 
     const handleChange = (event: React.ChangeEvent<HTMLInputElement>) => {
         setInputValue(event.target.value);
-        // Trigger search with debounce
         onSearch(event.target.value);
     };
 
     const handleKeyDown = (event: React.KeyboardEvent<HTMLInputElement>) => {
         if (event.key === "Enter") {
-            console.log("pressed enter");
-            // Trigger search immediately on Enter key press
             onSearch(inputValue, true);
         }
     };

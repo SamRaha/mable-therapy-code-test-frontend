@@ -1,4 +1,3 @@
-// src/components/RepositoryList.tsx
 import React from "react";
 import styled from "styled-components";
 import { Repository } from "../types/repository";
@@ -19,7 +18,7 @@ export const RepoItem = styled.li`
     &:last-child {
         border-bottom: none;
     }
-    height: 85px;
+    height: 80px;
 `;
 
 export const RepoName = styled.h2`
@@ -77,7 +76,7 @@ const RepositoryList: React.FC<RepositoryListProps> = ({ repositories, favourite
             {repositories.map((repo) => (
                 <RepoItem key={repo.id}>
                     <RepoName onClick={() => window.open(repo.html_url, "_blank")}>{repo.full_name}</RepoName>
-                    <RepoDescription>{repo.description ? repo.description : "No description"}</RepoDescription>
+                    <RepoDescription className="ellipsis">{repo.description ? repo.description : "No description"}</RepoDescription>
                     <StarCount>{repo.stargazers_count}</StarCount>
                     <FavoriteButton onClick={() => toggleFavorite(repo)}>{favourites.some((f) => f.id === repo.id) ? "Unfavourite" : "Favourite"}</FavoriteButton>
                 </RepoItem>
