@@ -39,27 +39,24 @@ const Results = styled.div`
 const App: React.FC = () => {
     const [searchTerm, setSearchTerm] = useState<string>("");
     const [page, setPage] = useState<number>(1);
-    const [immediate, setImmediate] = useState<boolean>(false);
     const [favourites, setFavourites] = useLocalStorage<Repository[]>("favourites", []);
 
     const handleSearch = useCallback(
-        (value: string, immediate: boolean = false) => {
+        (value: string) => {
             setSearchTerm(value);
             setPage(1);
-            setImmediate(immediate);
         },
-        [setSearchTerm, setPage, setImmediate]
+        [setSearchTerm, setPage]
     );
 
     const handlePageChange = useCallback(
         (newPage: number) => {
             setPage(newPage);
-            setImmediate(true);
         },
-        [setPage, setImmediate]
+        [setPage]
     );
 
-    const { data, loading, error, totalPages } = useSearch(searchTerm, page, immediate);
+    const { data, loading, error, totalPages } = useSearch(searchTerm, page);
     const showResults = useMemo(() => !loading && !error && data.length > 0, [data, loading, error]);
 
     return (

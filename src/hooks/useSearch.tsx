@@ -3,24 +3,23 @@ import { Repository } from "../types/repository";
 
 const BASE_URL = "https://api.github.com";
 const ITEMS_PER_PAGE = 5;
-const DEBOUNCE_DELAY = 300; // milliseconds
 
-export const useSearch = (searchTerm: string, page: number, immediate: boolean) => {
+export const useSearch = (searchTerm: string, page: number) => {
     const [data, setData] = useState<Repository[]>([]);
     const [loading, setLoading] = useState<boolean>(false);
     const [error, setError] = useState<string | null>(null);
     const [totalPages, setTotalPages] = useState<number>(0);
 
     useEffect(() => {
-        const fetchData = async () => {
-            if (!searchTerm) {
-                setData([]);
-                setTotalPages(0);
-                setLoading(false);
-                setError(null);
-                return;
-            }
+        if (!searchTerm.trim()) {
+            setData([]);
+            setTotalPages(0);
+            setLoading(false);
+            setError(null);
+            return;
+        }
 
+        const fetchData = async () => {
             setLoading(true);
             setError(null);
 
@@ -38,7 +37,7 @@ export const useSearch = (searchTerm: string, page: number, immediate: boolean) 
 
                 const result = await response.json();
                 if (result.total_count === 0) {
-                    setError("No results found. Please try a different search query.");
+                    setError("No results found. Please refine your search.");
                     setData([]);
                     setTotalPages(0);
                 } else {
@@ -67,19 +66,13 @@ export const useSearch = (searchTerm: string, page: number, immediate: boolean) 
                     setError("Failed to fetch data. Please try again.");
                 }
                 setData([]);
-                setTotalPages(0);
             } finally {
                 setLoading(false);
             }
         };
 
-        if (immediate) {
-            fetchData();
-        } else {
-            const timerId = setTimeout(() => fetchData(), DEBOUNCE_DELAY);
-            return () => clearTimeout(timerId);
-        }
-    }, [searchTerm, page, immediate]);
+        fetchData();
+    }, [searchTerm, page]);
 
     return { data, loading, error, totalPages };
 };

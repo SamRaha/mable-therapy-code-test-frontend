@@ -29,16 +29,32 @@ interface SearchBarProps {
     onSearch: (searchTerm: string, immediate?: boolean) => void;
 }
 
+const DEBOUNCE_DELAY = 300; // milliseconds
+
 const SearchBar: React.FC<SearchBarProps> = ({ onSearch }) => {
     const [inputValue, setInputValue] = useState<string>("");
+    const [timer, setTimer] = useState<NodeJS.Timeout | null>(null);
 
     const handleChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-        setInputValue(event.target.value);
-        onSearch(event.target.value);
+        const value = event.target.value;
+        setInputValue(value);
+
+        if (timer) {
+            clearTimeout(timer);
+        }
+
+        const newTimer = setTimeout(() => {
+            onSearch(value);
+        }, DEBOUNCE_DELAY);
+
+        setTimer(newTimer);
     };
 
     const handleKeyDown = (event: React.KeyboardEvent<HTMLInputElement>) => {
         if (event.key === "Enter") {
+            if (timer) {
+                clearTimeout(timer);
+            }
             onSearch(inputValue, true);
         }
     };
