@@ -1,6 +1,6 @@
 import React from "react";
 import { render, screen } from "@testing-library/react";
-import "@testing-library/jest-dom/extend-expect";
+import "@testing-library/jest-dom"; // This automatically extends expect
 import App from "./App";
 import * as useSearchHook from "./hooks/useSearch";
 
@@ -18,7 +18,8 @@ describe("App", () => {
             data: [],
             loading: true,
             error: null,
-            hasNextPage: false,
+            totalPages: 0,
+            totalCount: 0,
         });
         render(<App />);
         expect(await screen.findByTestId("loading")).toBeInTheDocument();
@@ -29,7 +30,8 @@ describe("App", () => {
             data: [],
             loading: false,
             error: "Failed to fetch",
-            hasNextPage: false,
+            totalPages: 0,
+            totalCount: 0,
         });
         render(<App />);
         expect(await screen.findByTestId("error-message")).toHaveTextContent("Failed to fetch");
@@ -40,7 +42,8 @@ describe("App", () => {
             data: [{ id: 1, full_name: "repo/name", description: "Test repo", stargazers_count: 42 }],
             loading: false,
             error: null,
-            hasNextPage: true,
+            totalPages: 1,
+            totalCount: 1,
         });
         render(<App />);
         expect(await screen.findByTestId("repository-list")).toBeInTheDocument();

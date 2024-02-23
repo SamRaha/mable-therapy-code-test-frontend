@@ -41,7 +41,7 @@ const Results = styled.div`
 const App: React.FC = () => {
     const [searchTerm, setSearchTerm] = useState<string>("");
     const [page, setPage] = useState<number>(1);
-    const [sort, setSort] = useState<string>(""); // Added sort state
+    const [sort, setSort] = useState<string>("");
     const [favourites, setFavourites] = useLocalStorage<Repository[]>("favourites", []);
 
     const handleSearch = useCallback(
@@ -72,7 +72,8 @@ const App: React.FC = () => {
         setPage(1);
     }, [setSearchTerm, setPage]);
 
-    const { data, loading, error, totalPages, totalCount } = useSearch(searchTerm, page, sort); // Pass sort to useSearch
+    const { data, loading, error, totalPages, totalCount } = useSearch(searchTerm, page, sort);
+    console.log("data: ", data);
     const showResults = useMemo(() => !loading && !error && data.length > 0, [data, loading, error]);
 
     return (
@@ -86,15 +87,23 @@ const App: React.FC = () => {
                     element={
                         <Container key={Math.random()}>
                             <SearchBar onSearch={handleSearch} />
-                            {showResults ? <SortSelect totalCount={totalCount} sort={sort} onSortChange={handleSortChange} /> : null}
+                            {showResults || data.length > 0 ? <SortSelect totalCount={totalCount} sort={sort} onSortChange={handleSortChange} /> : null}
                             <Results>
                                 {loading ? (
-                                    <LoadingContainer>
+                                    <LoadingContainer data-testid="loading">
                                         <LoadingWheel />
                                     </LoadingContainer>
                                 ) : null}
-                                {error ? <ErrorMessage>{error}</ErrorMessage> : null}
-                                {showResults ? <RepositoryList repositories={data} onFavourites={setFavourites} favourites={favourites} /> : null}
+                                {error && <ErrorMessage data-testid="error-message">{error}</ErrorMessage>}
+
+                                {showResults ? (
+                                    <RepositoryList
+                                        repositories={data}
+                                        favourites={favourites}
+                                        onFavourites={setFavourites}
+                                        data-testid="repository-list" // Add this line
+                                    />
+                                ) : null}
                             </Results>
                             <div className="space-24" />
                             {showResults ? <Pagination currentPage={page} totalPages={totalPages} onPageChange={handlePageChange} /> : null}

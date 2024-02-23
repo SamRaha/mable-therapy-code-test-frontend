@@ -87,14 +87,14 @@ interface RepositoryListProps {
     onFavourites: (value: Repository[] | ((val: Repository[]) => Repository[])) => void;
 }
 
-const RepositoryList: React.FC<RepositoryListProps> = ({ repositories, favourites, onFavourites }) => {
+const RepositoryList: React.FC<RepositoryListProps> = ({ repositories, "data-testid": dataTestId, favourites, onFavourites }) => {
     const toggleFavorite = (repo: Repository) => {
         const isFavourite = favourites.some((f) => f.id === repo.id);
         onFavourites(isFavourite ? favourites.filter((f) => f.id !== repo.id) : [...favourites, repo]);
     };
 
     return (
-        <Container>
+        <Container data-testid={dataTestId}>
             {repositories.map((repo) => (
                 <RepoItem key={repo.id}>
                     <div>
