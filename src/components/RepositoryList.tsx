@@ -3,6 +3,8 @@ import styled from "styled-components";
 import { Repository } from "../types/repository";
 import StarSrc from "../assets/star-solid.svg";
 import ForkSrc from "../assets/code-fork-solid.svg";
+import FavouriteTrueSrc from "../assets/favourite-true.svg";
+import FavouriteFalseSrc from "../assets/favourite-false.svg";
 
 const Container = styled.ul`
     list-style: none;
@@ -53,15 +55,23 @@ const StarCount = styled.span`
     color: #586069;
 `;
 
-const FavoriteButton = styled.button`
+const FavouriteButton = styled.button`
     background: none;
     border: none;
     cursor: pointer;
-    color: #0366d6;
+    padding: 0;
+    display: inline-flex;
+    align-items: center;
+`;
 
-    &:hover {
-        text-decoration: underline;
-    }
+const FavouriteImage = styled.img`
+    width: 16px;
+    height: 16px;
+`;
+const FavouriteButtonText = styled.span`
+    margin-left: 6px;
+    font-size: 13px;
+    color: #0366d6;
 `;
 
 const ForksCount = styled.span`
@@ -88,7 +98,7 @@ interface RepositoryListProps {
 }
 
 const RepositoryList: React.FC<RepositoryListProps> = ({ repositories, "data-testid": dataTestId, favourites, onFavourites }) => {
-    const toggleFavorite = (repo: Repository) => {
+    const toggleFavourite = (repo: Repository) => {
         const isFavourite = favourites.some((f) => f.id === repo.id);
         onFavourites(isFavourite ? favourites.filter((f) => f.id !== repo.id) : [...favourites, repo]);
     };
@@ -110,7 +120,13 @@ const RepositoryList: React.FC<RepositoryListProps> = ({ repositories, "data-tes
                         <div className="space-24" />
                         <UpdatedAt>Last updated: {new Date(repo.updated_at).toLocaleDateString()}</UpdatedAt>
                         <div className="space-24" />
-                        <FavoriteButton onClick={() => toggleFavorite(repo)}>{favourites.some((f) => f.id === repo.id) ? "Unfavourite" : "Favourite"}</FavoriteButton>
+                        <FavouriteButton onClick={() => toggleFavourite(repo)}>
+                            <FavouriteImage
+                                src={favourites.some((f) => f.id === repo.id) ? FavouriteTrueSrc : FavouriteFalseSrc}
+                                alt={favourites.some((f) => f.id === repo.id) ? "Favourited" : "Favourite"}
+                            />
+                            <FavouriteButtonText>{favourites.some((f) => f.id === repo.id) ? "Favourited" : "Favourite"}</FavouriteButtonText>
+                        </FavouriteButton>
                     </InfoContainer>
                 </RepoItem>
             ))}

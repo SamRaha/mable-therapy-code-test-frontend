@@ -96,14 +96,7 @@ const App: React.FC = () => {
                                 ) : null}
                                 {error && <ErrorMessage data-testid="error-message">{error}</ErrorMessage>}
 
-                                {showResults ? (
-                                    <RepositoryList
-                                        repositories={data}
-                                        favourites={favourites}
-                                        onFavourites={setFavourites}
-                                        data-testid="repository-list" // Add this line
-                                    />
-                                ) : null}
+                                {showResults ? <RepositoryList repositories={data} favourites={favourites} onFavourites={setFavourites} data-testid="repository-list" /> : null}
                             </Results>
                             <div className="space-24" />
                             {showResults ? <Pagination currentPage={page} totalPages={totalPages} onPageChange={handlePageChange} /> : null}

@@ -16,14 +16,14 @@ interface FavouritesProps {
     onFavourites: (value: Repository[] | ((val: Repository[]) => Repository[])) => void;
 }
 
-const Favorites: React.FC<FavouritesProps> = ({ favourites, onFavourites }) => {
+const Favourites: React.FC<FavouritesProps> = ({ favourites, onFavourites }) => {
     return (
         <Container>
-            <h2>Favorites</h2>
+            <h2>Favourites</h2>
 
             <RepositoryList repositories={favourites} favourites={favourites} onFavourites={onFavourites} />
         </Container>
     );
 };
 
-export default Favorites;
+export default Favourites;
