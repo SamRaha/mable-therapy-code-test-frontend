@@ -118,7 +118,7 @@ const RepositoryList: React.FC<RepositoryListProps> = ({ repositories, "data-tes
                         <ForkIcon src={ForkSrc} alt="Fork" />
                         <ForksCount>{repo.forks_count}</ForksCount>
                         <div className="space-24" />
-                        <UpdatedAt>Last updated: {new Date(repo.updated_at).toLocaleDateString()}</UpdatedAt>
+                        <UpdatedAt>{new Date(repo.updated_at).toLocaleDateString()}</UpdatedAt>
                         <div className="space-24" />
                         <FavouriteButton onClick={() => toggleFavourite(repo)}>
                             <FavouriteImage
