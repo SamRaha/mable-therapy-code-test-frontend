@@ -1,6 +1,6 @@
 import React from "react";
 import styled from "styled-components";
-import formatLargeNumber from "../JSutils";
+import formatLargeNumber from "../Utils/JSutils";
 
 // Define prop types for the component
 interface SortSelectProps {

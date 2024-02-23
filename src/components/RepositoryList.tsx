@@ -1,8 +1,10 @@
 import React from "react";
 import styled from "styled-components";
 import { Repository } from "../types/repository";
+import StarSrc from "../assets/star-solid.svg";
+import ForkSrc from "../assets/code-fork-solid.svg";
 
-export const Container = styled.ul`
+const Container = styled.ul`
     list-style: none;
     padding: 12px;
     margin: 0;
@@ -11,7 +13,7 @@ export const Container = styled.ul`
     border-radius: 1.5rem;
 `;
 
-export const RepoItem = styled.li`
+const RepoItem = styled.li`
     padding: 10px;
     border-bottom: 1px solid #e1e4e8;
 
@@ -21,7 +23,7 @@ export const RepoItem = styled.li`
     height: 80px;
 `;
 
-export const RepoName = styled.h2`
+const RepoName = styled.h2`
     font-size: 16px;
     color: #0366d6;
     margin: 0 0 6px 0;
@@ -31,20 +33,24 @@ export const RepoName = styled.h2`
     }
 `;
 
-export const RepoDescription = styled.p`
+const RepoDescription = styled.p`
     font-size: 14px;
     color: #586069;
     margin: 0 0 6px 0;
 `;
 
-export const StarCount = styled.span`
+const StarIcon = styled.img`
+    width: 14px;
+    margin: 0 3px 0 0;
+`;
+const ForkIcon = styled.img`
+    width: 12px;
+    margin: 0 3px 0 0;
+`;
+const StarCount = styled.span`
     display: inline-block;
-    margin: 0 12px 0 0;
     font-size: 12px;
     color: #586069;
-    &::before {
-        content: "⭐ ";
-    }
 `;
 
 const FavoriteButton = styled.button`
@@ -62,9 +68,6 @@ const ForksCount = styled.span`
     display: inline-block;
     font-size: 12px;
     color: #586069;
-    &::before {
-        content: "🍴 ";
-    }
 `;
 
 const UpdatedAt = styled.span`
@@ -73,6 +76,10 @@ const UpdatedAt = styled.span`
     color: #586069;
 `;
 
+const InfoContainer = styled.div`
+    display: flex;
+    align-items: center;
+`;
 interface RepositoryListProps {
     repositories: Repository[];
     "data-testid"?: string;
@@ -90,13 +97,21 @@ const RepositoryList: React.FC<RepositoryListProps> = ({ repositories, favourite
         <Container>
             {repositories.map((repo) => (
                 <RepoItem key={repo.id}>
-                    <RepoName onClick={() => window.open(repo.html_url, "_blank")}>{repo.full_name}</RepoName>
-                    <RepoDescription className="ellipsis">{repo.description ? repo.description : "No description"}</RepoDescription>
-
-                    <StarCount>{repo.stargazers_count}</StarCount>
-                    <ForksCount>{repo.forks_count}</ForksCount>
-                    <UpdatedAt>Last updated: {new Date(repo.updated_at).toLocaleDateString()}</UpdatedAt>
-                    <FavoriteButton onClick={() => toggleFavorite(repo)}>{favourites.some((f) => f.id === repo.id) ? "Unfavourite" : "Favourite"}</FavoriteButton>
+                    <div>
+                        <RepoName onClick={() => window.open(repo.html_url, "_blank")}>{repo.full_name}</RepoName>
+                        <RepoDescription className="ellipsis">{repo.description ? repo.description : "No description"}</RepoDescription>
+                    </div>
+                    <InfoContainer>
+                        <StarIcon src={StarSrc} alt="Star" />
+                        <StarCount>{repo.stargazers_count}</StarCount>
+                        <div className="space-24" />
+                        <ForkIcon src={ForkSrc} alt="Fork" />
+                        <ForksCount>{repo.forks_count}</ForksCount>
+                        <div className="space-24" />
+                        <UpdatedAt>Last updated: {new Date(repo.updated_at).toLocaleDateString()}</UpdatedAt>
+                        <div className="space-24" />
+                        <FavoriteButton onClick={() => toggleFavorite(repo)}>{favourites.some((f) => f.id === repo.id) ? "Unfavourite" : "Favourite"}</FavoriteButton>
+                    </InfoContainer>
                 </RepoItem>
             ))}
         </Container>

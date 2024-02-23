@@ -12,6 +12,7 @@ import { useSearch } from "./hooks/useSearch";
 import Favourites from "./pages/Favourites";
 import { Repository } from "./types/repository";
 import SortSelect from "./components/SortSelect";
+import LocationListener from "./Utils/LocationListener";
 
 const Container = styled.div`
     max-width: 800px;
@@ -66,18 +67,24 @@ const App: React.FC = () => {
         [setSort, setPage]
     );
 
+    const resetState = useCallback(() => {
+        setSearchTerm("");
+        setPage(1);
+    }, [setSearchTerm, setPage]);
+
     const { data, loading, error, totalPages, totalCount } = useSearch(searchTerm, page, sort); // Pass sort to useSearch
     const showResults = useMemo(() => !loading && !error && data.length > 0, [data, loading, error]);
 
     return (
         <Router>
             <Navbar />
+            <LocationListener onLocationChange={resetState} />
             <Routes>
                 <Route path="/favourites" element={<Favourites favourites={favourites} onFavourites={setFavourites} />} />
                 <Route
                     path="/"
                     element={
-                        <Container>
+                        <Container key={Math.random()}>
                             <SearchBar onSearch={handleSearch} />
                             {showResults ? <SortSelect totalCount={totalCount} sort={sort} onSortChange={handleSortChange} /> : null}
                             <Results>
