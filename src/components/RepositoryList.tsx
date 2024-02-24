@@ -65,8 +65,8 @@ const FavouriteButton = styled.button`
 `;
 
 const FavouriteImage = styled.img`
-    width: 16px;
-    height: 16px;
+    width: 14px;
+    height: 14px;
 `;
 const FavouriteButtonText = styled.span`
     margin-left: 6px;
@@ -123,7 +123,7 @@ const RepositoryList: React.FC<RepositoryListProps> = ({ repositories, "data-tes
                         <FavouriteButton onClick={() => toggleFavourite(repo)}>
                             <FavouriteImage
                                 src={favourites.some((f) => f.id === repo.id) ? FavouriteTrueSrc : FavouriteFalseSrc}
-                                alt={favourites.some((f) => f.id === repo.id) ? "Favourited" : "Favourite"}
+                                alt={favourites.some((f) => f.id === repo.id) ? "Favourited icon" : "Favourite icon"}
                             />
                             <FavouriteButtonText>{favourites.some((f) => f.id === repo.id) ? "Favourited" : "Favourite"}</FavouriteButtonText>
                         </FavouriteButton>
