@@ -1,4 +1,3 @@
-// Updated useSearch hook with sort parameter
 import { useState, useEffect } from "react";
 import { Repository } from "../types/repository";
 
