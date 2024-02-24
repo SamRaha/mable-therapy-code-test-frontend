@@ -73,7 +73,6 @@ const App: React.FC = () => {
     }, [setSearchTerm, setPage]);
 
     const { data, loading, error, totalPages, totalCount } = useSearch(searchTerm, page, sort);
-    console.log("data: ", data);
     const showResults = useMemo(() => !loading && !error && data.length > 0, [data, loading, error]);
 
     return (
@@ -85,7 +84,7 @@ const App: React.FC = () => {
                 <Route
                     path="/"
                     element={
-                        <Container key={Math.random()}>
+                        <Container>
                             <SearchBar onSearch={handleSearch} />
                             {showResults || data.length > 0 ? <SortSelect totalCount={totalCount} sort={sort} onSortChange={handleSortChange} /> : null}
                             <Results>
