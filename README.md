@@ -1,46 +1,13 @@
-# Getting Started with Create React App
+Enhancements:
 
-This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
+1. Introduce functionality that permits users to conduct searches based on usernames by utilizing the endpoint 'https://api.github.com/users/${username}/repos'. This enhancement will enable users to either select a user from a list or search directly by username to view their repositories.
 
-## Available Scripts
+2. Given the current limitations imposed by the GitHub API, which restricts the number of calls within a specific timeframe, I propose to authenticate requests by incorporating my GitHub API key. This strategy necessitates the development of a backend service to securely manage the API key, ensuring it remains protected and confidential.
 
-In the project directory, you can run:
+3. For applications of an enterprise scale, I would advocate for the adoption of React Query to efficiently cache API requests. This approach significantly optimizes data retrieval processes, minimizing redundant network calls and enhancing the overall user experience.
 
-### `npm start`
+4. While the current state management strategy employs prop drilling, which suffices for the simplicity of this application, considerations for future scalability and complexity would lead me to implement more robust state management solutions, such as the Context API or Redux. These frameworks offer a more structured and maintainable approach to state management across larger, more complex applications.
 
-Runs the app in the development mode.\
-Open [http://localhost:3000](http://localhost:3000) to view it in the browser.
+Side Note:
 
-The page will reload if you make edits.\
-You will also see any lint errors in the console.
-
-### `npm test`
-
-Launches the test runner in the interactive watch mode.\
-See the section about [running tests](https://facebook.github.io/create-react-app/docs/running-tests) for more information.
-
-### `npm run build`
-
-Builds the app for production to the `build` folder.\
-It correctly bundles React in production mode and optimizes the build for the best performance.
-
-The build is minified and the filenames include the hashes.\
-Your app is ready to be deployed!
-
-See the section about [deployment](https://facebook.github.io/create-react-app/docs/deployment) for more information.
-
-### `npm run eject`
-
-**Note: this is a one-way operation. Once you `eject`, you can’t go back!**
-
-If you aren’t satisfied with the build tool and configuration choices, you can `eject` at any time. This command will remove the single build dependency from your project.
-
-Instead, it will copy all the configuration files and the transitive dependencies (webpack, Babel, ESLint, etc) right into your project so you have full control over them. All of the commands except `eject` will still work, but they will point to the copied scripts so you can tweak them. At this point you’re on your own.
-
-You don’t have to ever use `eject`. The curated feature set is suitable for small and middle deployments, and you shouldn’t feel obligated to use this feature. However we understand that this tool wouldn’t be useful if you couldn’t customize it when you are ready for it.
-
-## Learn More
-
-You can learn more in the [Create React App documentation](https://facebook.github.io/create-react-app/docs/getting-started).
-
-To learn React, check out the [React documentation](https://reactjs.org/).
+In the design decision to use the term 'favourite' over 'star', it's important to note the distinction between the two actions within the context of this application. The choice to 'favourite' does not equate to 'starring' a GitHub repository; these are distinct functionalities. The term 'favourite' more accurately reflects the user's action within this application, differentiating it from the specific 'star' feature provided by GitHub.
